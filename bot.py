@@ -149,7 +149,10 @@ def handle_add(args: List[str]):
     except ValueError:
         return "❌ Ошибка: сумма должна быть числом"
     
-    # БАГ #2: Нет проверки на отрицательную сумму
+   # Исправление бага #2
+    if amount <= 0:
+        return "❌ Ошибка: сумма должна быть положительной"
+    
     category = args[1]
     description = " ".join(args[2:]) if len(args) > 2 else ""
     
