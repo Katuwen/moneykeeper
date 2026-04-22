@@ -341,6 +341,11 @@ def process_message(text: str) -> str:
         else:
             return handle_unknown(command)
     else:
+     if not text:
+        return "❌ Пустое сообщение"
+     parts = text.split(maxsplit=2)
+     if len(parts) < 2:
+        return "❌ Укажите сумму и категорию. Пример: 150 кофе"
         # Обработка обычного сообщения (быстрое добавление)
         # БАГ #11: Не проверяет, что первое слово — число
         parts = text.split(maxsplit=2)
