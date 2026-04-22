@@ -141,6 +141,9 @@ def handle_add(args: List[str]):
     БАГ #7: Не проверяет, что сумма — число
     БАГ #2: Не проверяет, что amount > 0
     """
+        # Исправление бага #6: проверка на отсутствие аргументов
+    if len(args) == 0:
+        return "❌ Ошибка: укажите сумму и категорию. Пример: /add 150 кофе"
     if len(args) < 2:
         return "❌ Ошибка: нужно указать сумму и категорию.\nПример: /add 150 кофе"
     
@@ -149,7 +152,10 @@ def handle_add(args: List[str]):
     except ValueError:
         return "❌ Ошибка: сумма должна быть числом"
     
-    # БАГ #2: Нет проверки на отрицательную сумму
+   # Исправление бага #2
+    if amount <= 0:
+        return "❌ Ошибка: сумма должна быть положительной"
+    
     category = args[1]
     description = " ".join(args[2:]) if len(args) > 2 else ""
     
@@ -335,6 +341,11 @@ def process_message(text: str) -> str:
         else:
             return handle_unknown(command)
     else:
+     if not text:
+        return "❌ Пустое сообщение"
+     parts = text.split(maxsplit=2)
+     if len(parts) < 2:
+        return "❌ Укажите сумму и категорию. Пример: 150 кофе"
         # Обработка обычного сообщения (быстрое добавление)
         # БАГ #11: Не проверяет, что первое слово — число
         parts = text.split(maxsplit=2)
