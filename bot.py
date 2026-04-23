@@ -82,8 +82,9 @@ def get_date_range(period: str) -> Tuple[datetime, datetime]:
         start = datetime(now.year, now.month, now.day, 0, 0, 0)
         end = datetime(now.year, now.month, now.day, 23, 59, 59)
     elif period == "week":
-        # БАГ #4: Неправильный расчёт начала недели
-        start = now - timedelta(days=now.weekday())
+        # Исправление бага #4: неделя начинается с понедельника и включает воскресенье
+        days_to_monday = now.weekday()
+        start = now - timedelta(days=days_to_monday)
         start = datetime(start.year, start.month, start.day, 0, 0, 0)
         end = now
     elif period == "month":
