@@ -204,9 +204,8 @@ def handle_month():
     """
     now = datetime.now()
     # БАГ: показывает прошлый месяц
-    first_day_of_month = datetime(now.year, now.month - 1 if now.month > 1 else 12, 1)
-    if now.month == 1:
-        first_day_of_month = datetime(now.year - 1, 12, 1)
+        # Исправление бага #5: берём текущий месяц
+    first_day_of_month = datetime(now.year, now.month, 1, 0, 0, 0)
     
     expenses = db.get_expenses(current_user_id, first_day_of_month, now)
     
