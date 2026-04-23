@@ -274,7 +274,9 @@ def handle_export():
     Экспорт данных в JSON
     БАГ #9: Экспортирует всё подряд, без фильтрации
     """
-    expenses = db.get_expenses(current_user_id)
+        # Исправление бага #9: экспорт за последние 30 дней (фильтрация)
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    expenses = db.get_expenses(current_user_id, start_date=thirty_days_ago)
     
     export_data = {
         "user": db.users.get(current_user_id, {}),
