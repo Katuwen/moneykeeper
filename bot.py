@@ -82,8 +82,9 @@ def get_date_range(period: str) -> Tuple[datetime, datetime]:
         start = datetime(now.year, now.month, now.day, 0, 0, 0)
         end = datetime(now.year, now.month, now.day, 23, 59, 59)
     elif period == "week":
-        # БАГ #4: Неправильный расчёт начала недели
-        start = now - timedelta(days=now.weekday())
+        # Исправление бага #4: неделя начинается с понедельника и включает воскресенье
+        days_to_monday = now.weekday()
+        start = now - timedelta(days=days_to_monday)
         start = datetime(start.year, start.month, start.day, 0, 0, 0)
         end = now
     elif period == "month":
@@ -203,9 +204,8 @@ def handle_month():
     """
     now = datetime.now()
     # БАГ: показывает прошлый месяц
-    first_day_of_month = datetime(now.year, now.month - 1 if now.month > 1 else 12, 1)
-    if now.month == 1:
-        first_day_of_month = datetime(now.year - 1, 12, 1)
+        # Исправление бага #5: берём текущий месяц
+    first_day_of_month = datetime(now.year, now.month, 1, 0, 0, 0)
     
     expenses = db.get_expenses(current_user_id, first_day_of_month, now)
     
@@ -274,7 +274,9 @@ def handle_export():
     Экспорт данных в JSON
     БАГ #9: Экспортирует всё подряд, без фильтрации
     """
-    expenses = db.get_expenses(current_user_id)
+        # Исправление бага #9: экспорт за последние 30 дней (фильтрация)
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    expenses = db.get_expenses(current_user_id, start_date=thirty_days_ago)
     
     export_data = {
         "user": db.users.get(current_user_id, {}),
