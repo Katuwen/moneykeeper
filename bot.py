@@ -10,7 +10,27 @@ import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
+import os
 
+CATEGORIES_FILE = "categories.json"
+
+def load_categories(user_id):
+        """Загружает категории пользователя из файла"""
+        if os.path.exists(CATEGORIES_FILE):
+            with open(CATEGORIES_FILE, "r") as f:
+                data = json.load(f)
+                return data.get(str(user_id), db.get_categories(user_id))
+        return db.get_categories(user_id)
+
+def save_categories(user_id, categories):
+        """Сохраняет категории пользователя в файл"""
+        data = {}
+        if os.path.exists(CATEGORIES_FILE):
+            with open(CATEGORIES_FILE, "r") as f:
+                data = json.load(f)
+        data[str(user_id)] = categories
+        with open(CATEGORIES_FILE, "w") as f:
+            json.dump(data, f)
 # ===== ХРАНЕНИЕ ДАННЫХ В ПАМЯТИ (имитация БД) =====
 class InMemoryDB:
     """Имитация базы данных в памяти (без реальной БД)"""
@@ -231,7 +251,7 @@ def handle_categories():
     Показать список категорий
     БАГ #8: Категории не сохраняются между сессиями (но для имитации ок)
     """
-    categories = db.get_categories(current_user_id)
+    categories = load_categories(current_user_id)
     
     message = "📁 *Твои категории*\n\n" + "\n".join(f"• {cat}" for cat in categories)
     message += "\n\n➕ Добавить новую: /add_category <название>"
@@ -246,7 +266,7 @@ def handle_add_category(args: List[str]):
     
     category_name = " ".join(args)
     db.add_category(current_user_id, category_name)
-    
+    save_categories(current_user_id, db.get_categories(current_user_id))
     return f"✅ Категория «{category_name}» добавлена!"
 
 
