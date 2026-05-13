@@ -287,7 +287,7 @@ def handle_delete(args: List[str]):
         return f"✅ Расход #{expense_id} удалён"
     else:
         return f"❌ Расход #{expense_id} не найден"
-
+    # fix #10: проверка существования ID перед удалением
 
 def handle_export():
     """
